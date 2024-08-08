@@ -1,0 +1,11 @@
+# Django files
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+
+# Env
+.env
+venv/

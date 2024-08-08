@@ -5,7 +5,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 from images.routing import websocket_urlpatterns
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'image_processor.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_images.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

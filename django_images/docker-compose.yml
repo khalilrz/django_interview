@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: image
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+
+  redis:
+    image: redis:7
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"  # UI de gestion RabbitMQ
+      - "5672:5672"    # Broker RabbitMQ
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
+  web:
+    build: .
+    command: gunicorn django_images.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+
+  celery:
+    build: .
+    command: celery -A django_images worker -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - rabbitmq
+
+  celerybeat:
+    build: .
+    command: celery -A django_images beat -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - rabbitmq
+
+volumes:
+  postgres_data:
